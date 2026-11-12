@@ -18,6 +18,14 @@
     ],
     "author": "Sofus Højberg Lind",
     "license": "LGPL-3.0-or-later",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sofushl/openmeteoutil.git"
+    },
+    "homepage": "https://github.com/sofushl/openmeteoutil#readme",
+    "bugs": {
+        "url": "https://github.com/sofushl/openmeteoutil/issues"
+    },
     "type": "module",
     "types": "dist/index.d.ts",
     "devDependencies": {
