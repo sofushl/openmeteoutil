@@ -25,9 +25,6 @@ const week = await getForecast(coords);
 functions: `cacheFirst`, `putCache`, `getCoordsFromCity`, `getWeather`, `getForecast` 
 types: `Coords`, `Scope`, `WeatherData`,`WeatherDayData`, `WeatherWeekData`
 
-### TODO:
-Implement zod validation.
-
 ## License
 
 Copyright (C) 2026 Sofus Højberg Lind

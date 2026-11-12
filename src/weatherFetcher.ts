@@ -6,6 +6,7 @@
 
 import { putCache } from "./cache.js";
 import { Coords } from "./cityFetcher.js";
+import { z } from "zod";
 
 const apiLink = (
     { lat, lon }: Omit<Coords, "display" | "city">,
@@ -41,17 +42,22 @@ export type WeatherWeekData = {
     display?: string;
 };
 
-type CurrentApiResponse = {
-    current: { temperature_2m: number; wind_speed_10m: number };
-};
-type WeekApiResponse = {
-    daily: {
-        time: string[];
-        temperature_2m_max: number[];
-        temperature_2m_min: number[];
-        wind_gusts_10m_max: number[];
-    };
-};
+type CurrentApiResponse = z.infer<typeof CurrentSchema>;
+
+const CurrentSchema = z.object({
+    current: z.object({ temperature_2m: z.number(), wind_speed_10m: z.number() }),
+});
+
+type WeekApiResponse = z.infer<typeof ForecastSchema>;
+
+const ForecastSchema = z.object({
+    daily: z.object({
+        time: z.array(z.string()),
+        temperature_2m_max: z.array(z.number()),
+        temperature_2m_min: z.array(z.number()),
+        wind_gusts_10m_max: z.array(z.number()),
+    }),
+});
 
 async function getData<T>(link: string): Promise<T> {
     let response: Response;
@@ -80,8 +86,8 @@ export async function getWeather({
     display,
     city,
 }: Coords): Promise<WeatherData> {
-    const data = await getData<CurrentApiResponse>(
-        apiLink({ lat: lat, lon: lon }, "current"),
+    const data: CurrentApiResponse = CurrentSchema.parse(
+        await getData<unknown>(apiLink({ lat: lat, lon: lon }, "current")),
     );
 
     const out: WeatherData = {
@@ -102,8 +108,8 @@ export async function getForecast({
     display,
     city,
 }: Coords): Promise<WeatherWeekData> {
-    const data = await getData<WeekApiResponse>(
-        apiLink({ lat: lat, lon: lon }, "forecast"),
+    const data: WeekApiResponse = ForecastSchema.parse(
+        await getData<unknown>(apiLink({ lat: lat, lon: lon }, "forecast")),
     );
 
     let outWeatherData: WeatherDayData[] = [];
