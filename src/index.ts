@@ -1,21 +1,15 @@
-import { cacheFirst } from "./cache.js";
-import { Scope } from "./weatherFetcher.js";
+/*
+ * Copyright (C) 2026 Sofus Højberg Lind
+ * SPDX-License-Identifier: LGPL-3.0-or-later
+ */
 
-async function main() {
-  const city = process.argv[2].toLowerCase();
-  const scope = process.argv[3] ? process.argv[3].toLowerCase() : "current";
-
-  if (!city) {
-    console.error("Usage: node dist/index.js <city>");
-    process.exit(1);
-  }
-
-  if (!((scope as Scope) == scope)) {
-    console.error("Usage: npm start <city> <current or forecast>");
-    process.exit(1);
-  }
-
-  cacheFirst(city, scope);
-}
-
-main();
+export { cacheFirst, putCache } from "./cache.js";
+export { getCoordsFromCity } from "./cityFetcher.js";
+export type { Coords } from "./cityFetcher.js";
+export { getForecast, getWeather } from "./weatherFetcher.js";
+export type {
+    Scope,
+    WeatherData,
+    WeatherDayData,
+    WeatherWeekData,
+} from "./weatherFetcher.js";

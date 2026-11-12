@@ -1,6 +1,32 @@
-# weathercli
-Simple weather cli written in typescript for training purposes
+# openmeteoutil
+Simple Open-Meteo interface using OpenStreetMap (Nominatim) for city lookup.
+Written in TypeScript for training purposes.
 
+## CLI
+```bash
+npx openmeteoutil <city> --current   # current weather (default)
+npx openmeteoutil <city> --forecast  # 7-day forecast
+```
+Results are cached in `~/.cache/openmeteoutil/cache.json`
+(current: 10 minutes, forecast: 4 hours).
+
+To run the demo from a clone: `npm start <city>`.
+
+## Library
+```ts
+import { getCoordsFromCity, getWeather, getForecast } from "openmeteoutil";
+
+const coords = await getCoordsFromCity({ city: "Oslo" });
+const now = await getWeather(coords);
+const week = await getForecast(coords);
+```
+
+### Exports: 
+functions: `cacheFirst`, `putCache`, `getCoordsFromCity`, `getWeather`, `getForecast` 
+types: `Coords`, `Scope`, `WeatherData`,`WeatherDayData`, `WeatherWeekData`
+
+### TODO:
+Implement zod validation.
 
 ## License
 
