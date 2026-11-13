@@ -16,23 +16,17 @@ export async function main() {
 
     const allArgs: string[] = process.argv.slice(2).map((a) => a.toLowerCase());
 
-    const cities: string[] = allArgs.filter((a) => a.charAt(0).match(/^\p{L}/u));
-
     const args: string[] = allArgs
         .filter((a) => !a.charAt(0).match(/^\p{L}/u))
         .map((a) => a.replace(/^-+/, ""));
 
-    if (!cities[0]) {
-        console.error("Usage: openmeteoutil <city> --current|--forecast");
-        process.exit(1);
-    }
+    const city: string = (allArgs.filter((a) => a.charAt(0).match(/^\p{L}/u))).join(" ");
 
-    const coords: Coords = await coordsClient.getCoords({ city: cities[0] });
+    const coords: Coords = await coordsClient.getCoords({ city });
 
     const scope: Scope = args.includes("forecast") ? "forecast" : "current";
 
     if (scope == "forecast") {
-
         const out = await weatherClient.getForecast(coords)
         printForecast(out)
     } else if (scope == "current") {

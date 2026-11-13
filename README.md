@@ -16,7 +16,7 @@ Weather forecasts fetched: `~/.cache/openmeteoutil/forecast.json`
 
 Default refresh times: current: 10 minutes, forecast: 4 hours.
 
-To run the demo from a clone: `npm start <city>`.
+To run the demo from a clone: `npm start -- <city>`.
 
 ## Library
 ```ts
