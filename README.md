@@ -7,23 +7,40 @@ Written in TypeScript for training purposes.
 npx openmeteoutil <city> --current   # current weather (default)
 npx openmeteoutil <city> --forecast  # 7-day forecast
 ```
-Results are cached in `~/.cache/openmeteoutil/cache.json`
-(current: 10 minutes, forecast: 4 hours).
+
+### Cache
+
+Locations fetched: `~/.cache/openmeteoutil/cities.json`
+Weather reports fetched: `~/.cache/openmeteoutil/current.json`
+Weather forecasts fetched: `~/.cache/openmeteoutil/forecast.json`
+
+Default refresh times: current: 10 minutes, forecast: 4 hours.
 
 To run the demo from a clone: `npm start <city>`.
 
 ## Library
 ```ts
-import { getCoordsFromCity, getWeather, getForecast } from "openmeteoutil";
+import { OpenmeteoClient, NominatimClient } from "openmeteoutil";
 
-const coords = await getCoordsFromCity({ city: "Oslo" });
-const now = await getWeather(coords);
-const week = await getForecast(coords);
+const nominatim = new NominatimClient("myapp.locationfetcher");
+const openmeteo = new OpenmeteoClient("myapp.forecastfetcher");
+
+const coords = await nominatim.getCoords({ city: "Oslo" });
+const now = await openmeteo.getWeather(coords);
+const week = await openmeteo.getForecast(coords);
 ```
 
 ### Exports: 
-functions: `cacheFirst`, `putCache`, `getCoordsFromCity`, `getWeather`, `getForecast` 
-types: `Coords`, `Scope`, `WeatherData`,`WeatherDayData`, `WeatherWeekData`
+classes: `NominatimClient`, `OpenmeteoClient`
+types: `Coords`, `Location`, `Weather`, `Forecast`, `ForecastDay`, 
+
+## Disclaimer and attribution
+
+Unofficial community package. Not affiliated with or endorsed by Open-Meteo.
+
+Weather data by [Open-Meteo.com](https://open-meteo.com/). If you display this data in an app or UI, keep this attribution visible. The free Open-Meteo API is for non-commercial use. See the [Open-Meteo terms](https://open-meteo.com/en/terms) before commercial use.
+
+City lookup uses Nominatim. Map data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright).
 
 ## License
 

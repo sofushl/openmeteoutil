@@ -5,18 +5,21 @@
  * SPDX-License-Identifier: LGPL-3.0-or-later
  */
 
-import { cacheFirst } from "./cache.js";
-import { Scope, type WeatherData, type WeatherWeekData, type WeatherDayData } from "./weatherFetcher.js";
+import { OpenmeteoClient, Scope, Forecast, ForecastDay, Weather } from "./api/OpenmeteoClient.js";
+import { NominatimClient, Coords } from "./api/NominatimClient.js";
+
+const weatherClient = new OpenmeteoClient("openmeteoutil.weatherfetcher");
+const coordsClient = new NominatimClient("openmeteoutil.locationfetcher");
 
 
 export async function main() {
 
     const allArgs: string[] = process.argv.slice(2).map((a) => a.toLowerCase());
 
-    const cities: string[] = allArgs.filter((a) => a.charAt(0).match(/[a-z]/i));
+    const cities: string[] = allArgs.filter((a) => a.charAt(0).match(/^\p{L}/u));
 
     const args: string[] = allArgs
-        .filter((a) => !a.charAt(0).match(/[a-z]/i))
+        .filter((a) => !a.charAt(0).match(/^\p{L}/u))
         .map((a) => a.replace(/^-+/, ""));
 
     if (!cities[0]) {
@@ -24,41 +27,30 @@ export async function main() {
         process.exit(1);
     }
 
+    const coords: Coords = await coordsClient.getCoords({ city: cities[0] });
+
     const scope: Scope = args.includes("forecast") ? "forecast" : "current";
 
-    let ret;
-    try {
-        ret = await cacheFirst(cities[0], scope);
-    } catch (e) {
-        console.error("Error: " + (e as Error).message);
-        process.exit(1);
-    }
-
-    if (ret.age > 0) {
-        console.log("Printing from cache, age (ms): " + ret.age);
-    } else {
-        console.log("Fetched data:");
-    }
-
-    const out = ret.out
-
     if (scope == "forecast") {
-        printForecast(out as WeatherWeekData)
+
+        const out = await weatherClient.getForecast(coords)
+        printForecast(out)
     } else if (scope == "current") {
-        printWeather(out as WeatherData)
+        const out = await weatherClient.getWeather(coords)
+        printWeather(out)
     }
 }
 
-export function printWeather(data: WeatherData) {
+export function printWeather(data: Weather) {
     console.log(`${data.display}: ${data.temp}°C, wind ${data.wind} km/h`);
 }
 
-export function printForecast(data: WeatherWeekData) {
+export function printForecast(data: Forecast) {
     console.log(`
       ${data.display}:
       `);
 
-    let day: WeatherDayData;
+    let day: ForecastDay
 
     for (let i = 0; i < data.days.length; i++) {
         day = data.days[i];

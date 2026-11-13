@@ -1,14 +1,16 @@
 {
     "name": "openmeteoutil",
     "private": false,
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Simple openmeteo interface using openstreetmap.",
     "main": "dist/index.js",
     "engines": {
         "node": ">=22"
     },
     "scripts": {
+        "prebuild": "rm -rf ./dist",
         "build": "tsc -p .",
+        "prepack": "npm run build",
         "dev": "tsc --watch",
         "start": "npm run build && node dist/cli.js"
     },
